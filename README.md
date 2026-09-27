@@ -120,7 +120,7 @@ To push this repository to your personal or organization GitHub account:
 ```bash
 # 1. Create a new repository on https://github.com/new named 'kelvin-flux'
 # 2. Link your local repository to GitHub:
-git remote add origin https://github.com/<YOUR-USERNAME>/kelvin-flux.git
+git remote add origin https://github.com/samuhil/kelvin-flux.git
 
 # 3. Rename default branch to main and push:
 git branch -M main
