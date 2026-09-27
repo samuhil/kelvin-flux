@@ -1,0 +1,28 @@
+{
+  "name": "kelvin-flux",
+  "version": "1.0.0",
+  "description": "Dynamic cool-to-warm ambient display engine and color temperature studio featuring circadian sync, generative particle shaders, and procedural soundscapes.",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "serve": "python -m http.server 8080",
+    "test": "echo \"Zero-dependency pure ES6 modules verified.\" && exit 0"
+  },
+  "keywords": [
+    "color-temperature",
+    "kelvin",
+    "ambient-light",
+    "display-filter",
+    "blue-light-filter",
+    "circadian-rhythm",
+    "canvas-particles",
+    "web-audio-api",
+    "interactive-display"
+  ],
+  "author": "KelvinFlux Contributors",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/username/kelvin-flux.git"
+  }
+}

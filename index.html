@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KelvinFlux — Dynamic Cool to Warm Ambient Display Engine</title>
+  <meta name="description" content="A cinematic ambient display and color temperature studio shifting between 1,000K molten warmth and 12,000K arctic cool with circadian sync, generative particles, and procedural soundscapes.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
+</head>
+<body>
+  <!-- Atmospheric Canvas & Light Layers -->
+  <div class="ambient-glow-layer"></div>
+  <canvas id="ambient-canvas"></canvas>
+  <div id="screen-tint-overlay"></div>
+
+  <!-- Primary Application Container -->
+  <div class="app-container">
+    
+    <!-- Top Bar Navigation -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">✨</div>
+        <div>
+          <h1>KelvinFlux</h1>
+          <span class="brand-tag">Ambient Display &amp; Color Temperature Studio</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="btn-toggle-audio" class="btn-icon-action" title="Toggle Procedural Ambient Sound (Space)">
+          <span>🎧</span>
+          <span class="btn-label">Ambient Sound</span>
+        </button>
+        <button id="btn-toggle-tint" class="btn-icon-action" title="Toggle Full Screen Tint Filter (T)">
+          <span>👓</span>
+          <span class="btn-label">Screen Tint</span>
+        </button>
+        <button id="btn-toggle-fullscreen" class="btn-icon-action" title="Toggle Fullscreen Mood Light Mode (F)">
+          <span>🔆</span>
+          <span class="btn-label">Mood Light</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Controller Grid -->
+    <main class="dashboard-grid">
+      
+      <!-- Left Column: Hero Temperature Engine & Slider -->
+      <section class="glass-card temp-hero-card">
+        <div class="temp-hero-header">
+          <div>
+            <div class="temp-badge-row">
+              <span id="display-temp-category" class="temp-category-badge">Warm Ambient</span>
+              <span class="kbd-badge">1,000K - 12,000K</span>
+            </div>
+            <div class="temp-kelvin-big">
+              <span id="display-kelvin-val">6,500</span><span>K</span>
+            </div>
+            <h2 id="display-temp-title" class="temp-title">☀️ Standard Daylight (D65)</h2>
+            <p id="display-temp-desc" class="temp-desc">Reference sRGB daylight white. Balanced crisp clarity and true color reproduction.</p>
+          </div>
+
+          <!-- Warmth Ratio Gauge -->
+          <div class="warmth-meter-container">
+            <div class="warmth-meter-labels">
+              <span class="warm-label">🔥 Warmth: <strong id="display-warmth-pct">50%</strong></span>
+              <span class="cool-label">❄️ Coolness</span>
+            </div>
+            <div class="meter-track">
+              <div id="warmth-gauge-thumb" class="meter-thumb"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Master Kelvin Range Slider -->
+        <div class="slider-control-box">
+          <div class="slider-labels-row">
+            <span>🔥 1,000K (Candlelight)</span>
+            <span>🛋️ 2,700K</span>
+            <span>☀️ 6,500K</span>
+            <span>❄️ 12,000K (Arctic Cool)</span>
+          </div>
+          <input 
+            type="range" 
+            id="kelvin-slider" 
+            class="kelvin-slider" 
+            min="1000" 
+            max="12000" 
+            step="50" 
+            value="6500"
+            aria-label="Color Temperature in Kelvin"
+          >
+        </div>
+
+        <!-- Presets Selection Grid -->
+        <div class="presets-section">
+          <div class="section-label">Quick Ambiance Presets [Keys 1-8]</div>
+          <div id="presets-grid" class="preset-buttons-grid">
+            <!-- Dynamically populated by app.js -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Circadian Sync & Optical Metrics -->
+      <aside class="sidebar-panel">
+        
+        <!-- Circadian Rhythm Simulator -->
+        <div class="glass-card circadian-box">
+          <div class="section-label">Circadian Rhythm Simulator</div>
+          <div class="circadian-slider-wrapper">
+            <div class="time-readout">
+              <span style="font-size: 0.85rem; color: var(--text-muted);">Simulated Time:</span>
+              <strong id="circadian-time-display" style="font-family: var(--font-mono); color: var(--temp-accent);">12:00 PM</strong>
+            </div>
+            <input 
+              type="range" 
+              id="circadian-slider" 
+              class="circadian-slider" 
+              min="0" 
+              max="23.9" 
+              step="0.1" 
+              value="12"
+              aria-label="Circadian Time Slider"
+            >
+          </div>
+          <button id="btn-live-sync" class="btn-icon-action" style="justify-content: center; width: 100%;">
+            <span>⏰</span>
+            <span>Sync to My Real Time</span>
+          </button>
+        </div>
+
+        <!-- Optical & Display Metrics Card -->
+        <div class="glass-card">
+          <div class="section-label">Color &amp; Spectral Metrics</div>
+          
+          <div class="metric-row">
+            <span class="metric-title">Dominant Hue</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span id="metric-hex" class="metric-value">#FFFFFF</span>
+              <span class="color-swatch-box"></span>
+            </div>
+          </div>
+
+          <div class="metric-row">
+            <span class="metric-title">RGB Components</span>
+            <span id="metric-rgb" class="metric-value">255, 255, 255</span>
+          </div>
+
+          <div class="metric-row">
+            <span class="metric-title">HSL Values</span>
+            <span id="metric-hsl" class="metric-value">0°, 0%, 100%</span>
+          </div>
+
+          <div class="metric-row">
+            <span class="metric-title">Blue Light Filter</span>
+            <span id="metric-blue-reduction" class="metric-value" style="color: #34d399;">0%</span>
+          </div>
+
+          <div class="metric-row">
+            <span class="metric-title">Relative Luminance</span>
+            <span id="metric-luminance" class="metric-value">1.000</span>
+          </div>
+        </div>
+
+      </aside>
+    </main>
+
+    <!-- Interactive Display Showcase Sections -->
+    <h3 class="showcase-section-title">
+      <span>🖥️</span>
+      <span>Live Display Experience &amp; Perceptual Response</span>
+    </h3>
+
+    <section class="showcase-grid">
+
+      <!-- Interactive Split Screen Compare Slider -->
+      <div class="glass-card split-view-container" id="split-container">
+        <!-- Warm Side (Background) -->
+        <div class="split-layer warm-side">
+          <h4 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 6px;">🔥 Ultra Warm Glow (2,000K)</h4>
+          <p style="font-size: 0.9rem; max-width: 480px; opacity: 0.9;">Melatonin friendly, soothing ember radiance, zero blue light radiation.</p>
+        </div>
+
+        <!-- Cool Side (Foreground clipped) -->
+        <div class="split-layer cool-side" id="split-cool-side">
+          <h4 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 6px;">❄️ Glacial Cool (10,500K)</h4>
+          <p style="font-size: 0.9rem; max-width: 480px; opacity: 0.9;">High-alert crisp daylight, crystalline focus, vibrant modern contrast.</p>
+        </div>
+
+        <!-- Draggable Handle Divider -->
+        <div class="split-handle" id="split-handle">
+          <div class="split-knob">↔</div>
+        </div>
+      </div>
+
+      <!-- Typography / Reading Comfort Test Card -->
+      <div class="glass-card reading-sample">
+        <div class="section-label">Reading Comfort &amp; Eye Fatigue</div>
+        <h4 class="reading-article-title">The Circadian Neurobiology of Display Lighting</h4>
+        <p class="reading-body-text">
+          Exposure to high-temperature blue wavelengths (>6,000K) inhibits the secretion of melatonin by stimulating intrinsically photosensitive retinal ganglion cells (ipRGCs). Shifting your display to warmer spectrums (&lt;3,000K) replicates the natural twilight of sunset, relaxing ocular muscles and preparing the brain for restorative sleep.
+        </p>
+        <div class="contrast-pill">
+          <span>✓</span>
+          <span>Adaptive Contrast Matrix: Active</span>
+        </div>
+      </div>
+
+      <!-- Code Syntax Viewer Card -->
+      <div class="glass-card">
+        <div class="section-label">Developer Syntax Highlighting</div>
+        <div class="code-preview">
+          <code>
+<span class="code-comment">// KelvinFlux dynamic theme injector</span>
+<span class="code-keyword">const</span> <span class="code-func">shiftSpectrum</span> = (<span class="code-keyword">temp</span>) =&gt; {
+  <span class="code-keyword">const</span> { r, g, b } = <span class="code-func">PlanckianLocus</span>(temp);
+  <span class="code-func">applyAmbientBacklight</span>(`rgb(${r}, ${g}, ${b})`);
+  <span class="code-keyword">return</span> { status: <span class="code-str">'optimal'</span>, eyeFatigue: <span class="code-str">'minimal'</span> };
+};
+          </code>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Developer Tools & CSS Export Card -->
+    <div class="glass-card dev-tools-card">
+      <div class="code-copy-row">
+        <div>
+          <h4 style="font-weight: 700; font-size: 1.05rem;">Export Dynamic CSS Variables</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Drop these custom properties into your own web projects or CSS theme engine.</p>
+        </div>
+        <button id="btn-copy-css" class="btn-copy">📋 Copy CSS Variables</button>
+      </div>
+      <div class="code-preview" id="code-snippet-export">
+        <!-- Populated dynamically by app.js -->
+      </div>
+    </div>
+
+    <!-- Application Footer & Keyboard Shortcuts -->
+    <footer>
+      <div>
+        <span>Keyboard Shortcuts: </span>
+        <span class="kbd-badge">← / →</span> ±100K &nbsp;|&nbsp;
+        <span class="kbd-badge">↑ / ↓</span> ±500K &nbsp;|&nbsp;
+        <span class="kbd-badge">1-8</span> Presets &nbsp;|&nbsp;
+        <span class="kbd-badge">Space</span> Sound &nbsp;|&nbsp;
+        <span class="kbd-badge">F</span> Mood Light &nbsp;|&nbsp;
+        <span class="kbd-badge">T</span> Screen Tint
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub Repository</a>
+        <span>•</span>
+        <span>MIT License</span>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Main ES Module -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
